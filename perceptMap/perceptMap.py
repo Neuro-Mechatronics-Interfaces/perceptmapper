@@ -475,7 +475,7 @@ class CustomImage(Image):
         if not os.path.exists(rootwidget.rootPath):
             os.makedirs(rootwidget.rootPath)
 
-        self.export_to_png(os.path.join(rootwidget.rootPath, f'{rootwidget.rootName}_Sensation{rootwidget.sensationNumber}_{self.imglabel}_{rootwidget.repNumber}_.png'))
+        self.export_to_png(os.path.join(rootwidget.rootPath, f'{rootwidget.rootName}_Sensation{rootwidget.sensationNumber}_{self.imglabel}_{rootwidget.repNumber}.png'))
 
 
 class PerceptMap(App):
@@ -489,18 +489,20 @@ class PerceptMap(App):
     _block = -1
     _date = ""
     _name = ""
+    _mmip = ""
 
-    def __init__(self, subject: str = 'default', folder: str = '../data', block: int = -1):
+    def __init__(self, subject: str = 'default', folder: str = 'default', block: int = -1, mmip: str = 'default'):
         self._subject = subject
         self._folder = folder
         self._date = datetime.datetime.now().strftime('%Y_%m_%d')
         self._name = f'{self._subject}_{self._date}'
         self._block = block
+        self._mmip = mmip
         super().__init__()
 
     def build_config(self, config):
         config.setdefaults('config', {
-            'savePath': os.path.join(self._folder, self._name),
+            'savePath': self._folder,
             'default_font': 'Tahoma', 
             'window_icon': 'CMU_NI_BRAIN_RED.png', 
             'mmip': 'localhost',
@@ -523,12 +525,20 @@ class PerceptMap(App):
             block = self._block
         else:
             block = int(config.get('config', 'trialNumber'))
+        if self._folder=='default':
+            folder = os.path.join(config.get('config', 'savePath'), self._name)
+        else:
+            folder = os.path.join(self._folder, self._name)
+        if self._mmip=='default':
+            mmip = config.get('config', 'mmip')
+        else:
+            mmip = self._mmip
         return UserResponse(self._name, 
-                            config.get('config', 'savePath'), 
+                            folder, 
                             eval(config.get('config', 'imgFiles')),
                             eval(config.get('config', 'tabLabels')), 
                             block,
-                            config.get('config', 'mmip'))
+                            mmip)
 
     def on_stop(self):
         config = self.config
@@ -540,13 +550,14 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Interface to map sensory percepts and log per-trial results.')
     parser.add_argument('subject', help='Name or "initials" of the subject.')
-    parser.add_argument('--folder', default='../data', help='Location where "data" folder will be saved.')
+    parser.add_argument('--folder', default='default', help='Location where "data" folder will be saved.')
     parser.add_argument('--block', default=-1, type=int, help='"Trial" or "Block" number (integer).')
+    parser.add_argument('--mmip', default='default', help='IP address for server automation.')
     args = parser.parse_args()
     print("---")
     print(f'Subject: {args.subject}')
     print("---")
     print(f'Folder: {args.folder}')
     print("---")
-    app = PerceptMap(subject=args.subject, folder=args.folder, block=args.block)
+    app = PerceptMap(subject=args.subject, folder=args.folder, block=args.block, mmip=args.mmip)
     app.run()

@@ -7,12 +7,23 @@ Python and [Kivy](https://kivy.org/#home) based touch interface for reporting lo
 
 ## Getting Started
 
-The RNEL-PerceptMapper is a simple multitouch interface that allows researchers to document the location and perceptual quality of sensations evoked via electrical stimulation of the nervous system. This GUI was developed at the University of Pittsburgh's [Rehab Neural Engineering labs](http://www.rnel.pitt.edu) for studies focused on restoring sensation via spinal cord stimulaion in upper and lower limb amputees.  
-  
-For each repetition of stimulation, the subject can mark the location of the sensory percept with a free-hand drawing indicating the outline of the evoked percept on an image of the appropriate body segment, i.e., hand, arm, leg, sole etc. The percept quality can be recorded using several commonly used descriptors: touch, pressure, sharp, electrical, tickle, itch, pins and needles, movement, temperature, pain due to stimulation, phantom limb pain and can be modified to add custom descriptors. Each descriptor has an associated scale ranging from 0–10 to record the corresponding perceived intensity. This set of descriptors have been used [previously](https://iopscience.iop.org/article/10.1088/1741-2552/aa966a) to characterize evoked sensory percepts
+### Prerequisites
+```
+python <= 3.5
+```
+### Installing
+
+-   Clone this repo to your local machine using `https://github.com/Neuro-Mechatronics-Interfaces/perceptmapper.git`
+ -  Install the packages in requirements.txt 
+	- pip : `pip install -r requirements.txt`
+	- conda: `conda install --file requirements.txt`
+-  run `python perceptmapping.py`
+
 
 ### References
-Chandrasekaran, S., Nanivadekar, A., McKernan, G. P., Helm, E. R., Boninger, M. L., Collinger, J. L., Gaunt, R. A., Fisher, L. E. Sensory restoration by epidural stimulation of the lateral spinal cord in upper-limb amputees. [eLife](https://elifesciences.org/articles/54349)
+Chandrasekaran, S., Nanivadekar, A., McKernan, G. P., Helm, E. R., Boninger, M. L., Collinger, J. L., Gaunt, R. A., Fisher, L. E. Sensory restoration by epidural stimulation of the lateral spinal cord in upper-limb amputees. [eLife](https://elifesciences.org/articles/54349)  
+
+See more details at the original [RNEL-perceptmapper](https://github.com/pitt-rnel/perceptmapper). This set of descriptors have been used [previously](https://iopscience.iop.org/article/10.1088/1741-2552/aa966a) to characterize evoked sensory percepts.
 
 ### Citation
 If you use this work in your research, please cite it as follows:   
@@ -23,21 +34,6 @@ Nanivadekar, A., Chandrasekaran, C., Gaunt, R., Fisher., L. (2020, May 2). RNEL 
 Copyright (c) 2016 RNEL (University of Pittsburgh)
 
 ----------
-
-
-### Prerequisites
-```
-python <= 3.5
-```
-### Installing
-
--   Clone this repo to your local machine using `https://github.com/pitt-rnel/perceptmapper.git`
- -  Install the packages in requirements.txt 
-	- pip : `pip install requirements.txt`
-	- conda: `conda install --file requirements.txt`
--  run `python perceptmapping.py`
-
-If setup worked, you should be able to see the GUI shown above. If you experience issues during installation and/or use of RNEL-PerceptMapper, you can post a new issue on the [RNEL PerceptMapper Github issues webpage](https://github.com/pitt-rnel/perceptmapper/issues). We will reply to you as soon as possible.
 
 ## Usage
 

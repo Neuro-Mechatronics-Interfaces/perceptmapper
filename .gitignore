@@ -2,3 +2,5 @@
 data/
 
 perceptMap/perceptmap.ini
+
+*.png
