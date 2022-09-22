@@ -157,75 +157,7 @@
                             halign:"right"
                             font_size: 17
 
-                BoxLayout
-                    orientation: 'vertical'
-                    Label:
-                        text: 'How intense is your phantom limb pain?'
-                        size_hint_y: 0.15
-                        text_size: self.size
-                        halign: "left"
-                        font_size: 20
-                    SliderResponse:
-                        id: phantomSlider
-                        id2: 'phantomSlider'
-                        size_hint_y: 0.3
-                        min: 0
-                        max: 10
-                        step: 0.1
-                        value: 5
-                        orientation: 'horizontal'
-                    BoxLayout:
-                        size_hint: 0.95,  0.3
-                        pos_hint:{'x':0.03}
-                        orientation: 'horizontal'
-                        Label:
-                            text: '0 \n(No Pain)'
-                            text_size: self.size
-                            valign: "top"
-                            halign:"left"
-                            font_size: 17
-                        Label:
-                            text: '10 \n(Worst Possible)'
-                            text_size: self.size
-                            valign: "top"
-                            halign:"right"
-                            font_size: 17
-
-                BoxLayout:
-                    orientation: 'vertical'
-                    Label:
-                        text: 'Where do you feel pain in your phantom limb?'
-                        size_hint_y: 0.50
-                        text_size: self.size
-                        halign: "left"
-                        valign: 'middle'
-                        font_size: 20
-
-                    BoxLayout
-                        orientation:'vertical'
-                        BoxLayout:
-                            id: PLPbox1
-                            orientation: 'horizontal'
-                            LabelCheckBox:
-                                text: "Fingertips"
-                                check_pos: "left"
-                                group: 'PLP'
-                            LabelCheckBox:
-                                text: "Wrist"
-                                check_pos: "left"
-                                group: 'PLP'
-                        BoxLayout:
-                            id: PLPbox2
-                            orientation: 'horizontal'
-                            LabelCheckBox:
-                                text: "Whole hand"
-                                check_pos: "left"
-                                group: 'PLP'
-                            LabelCheckBox:
-                                text: "All of the above"
-                                check_pos: "left"
-                                group: 'PLP'
-
+                
         AccordionItem:
             id: modalityAccordion
             title: "Modality"
@@ -721,7 +653,42 @@
                     id2: 'img5'
                     opacity: 1
 
-
+            TabbedPanelItem:
+                id:tab6
+                background_down: "atlas://data/images/defaulttheme/button_pressed"
+                canvas.before:
+                    PushMatrix
+                    Rotate:
+                        angle: 90
+                        origin: self.center
+                    Rectangle:
+                        size: self.size
+                canvas.after:
+                    PopMatrix
+                font_size: 20
+                ImageProperties:
+                    id: img6
+                    id2: 'img6'
+                    opacity: 1
+					
+            TabbedPanelItem:
+                id:tab7
+                background_down: "atlas://data/images/defaulttheme/button_pressed"
+                canvas.before:
+                    PushMatrix
+                    Rotate:
+                        angle: 90
+                        origin: self.center
+                    Rectangle:
+                        size: self.size
+                canvas.after:
+                    PopMatrix
+                font_size: 20
+                ImageProperties:
+                    id: img7
+                    id2: 'img7'
+                    opacity: 1		
+		
 
         SensationButton:
             id2: 'add'

@@ -13,8 +13,7 @@ from kivy.uix.slider import Slider
 # from threading import Thread
 from kivy.uix.accordion import Accordion
 from kivy.uix.popup import Popup
-import yaml
-import os
+import argparse, datetime, os, yaml
 
 
 class UserResponse(BoxLayout):
@@ -28,13 +27,15 @@ class UserResponse(BoxLayout):
     rootPath = StringProperty()
     repNumber = NumericProperty(0)
     sensationNumber = NumericProperty(0)
-    saveFolder = StringProperty('default')
+    rootName = StringProperty('default')
     responseAnnot = set()
 
-    def __init__(self, inputroot, imgfiles, tablabels, lastRep, mmm_ip, **kwargs):
+    def __init__(self, name, inputroot, imgfiles, tablabels, lastRep, mmm_ip, **kwargs):
         """
         Parameters
         ----------
+        name: str
+            the filename (used to generated inputroot) base string
         inputroot : str
             filepath where output files will be saved
         imgfiles:
@@ -49,6 +50,7 @@ class UserResponse(BoxLayout):
 
         super(UserResponse, self).__init__(**kwargs)
         self.rootPath = inputroot
+        self.rootName = name
         self.imgfiles = imgfiles
         self.repNumber = lastRep
         for idx, tabImg in enumerate(zip(imgfiles, tablabels)):
@@ -68,27 +70,27 @@ class UserResponse(BoxLayout):
 
         self.ids['responseAcc'].copy_accordion()
 
-        fname = os.path.join(self.rootPath, self.saveFolder, self.saveFolder+"_R%03d" % self.repNumber)
+        fname = os.path.join(self.rootPath, self.rootName)
         radiosliderdict = self.ids['responseAcc'].labelCheckDict.copy()
         sensationdict = self.ids['floatStencilArea'].lineDict.copy()
         movedirdict = self.ids['floatStencilArea'].moveDict.copy()
         imgpropertiesdict = {'size': list(self.ids['img0'].get_norm_image_size()), 'pos': list(self.ids['img0'].pos)}
 
         if sensationdict or radiosliderdict['Sensation0']:
-            if not (self.saveFolder in self.responseAnnot):
-                self.responseAnnot.add(self.saveFolder)
+            if not (self.rootName in self.responseAnnot):
+                self.responseAnnot.add(self.rootName)
 
-            if not os.path.exists(os.path.join(self.rootPath, self.saveFolder)):
-                    os.makedirs(os.path.join(self.rootPath, self.saveFolder))
+            if not os.path.exists(self.rootPath):
+                    os.makedirs(self.rootPath)
 
             if sensationdict:
-                with open(fname+'_imPixel.yml', 'w') as outfile:
+                with open(fname+f'_imPixel_{self.repNumber}.yml', 'w') as outfile:
                     outfile.write(yaml.dump(imgpropertiesdict, default_flow_style=False))
                     outfile.write(yaml.dump(sensationdict, default_flow_style=False))
                 self.ids['floatStencilArea'].lineDict.clear()
 
             if radiosliderdict['Sensation0']:
-                with open(fname+'_RadioCheckSlider.yml', 'w') as outfile:
+                with open(fname+f'_RadioCheckSlider_{self.repNumber}.yml', 'w') as outfile:
                     outfile.write(yaml.dump(radiosliderdict, default_flow_style=False))
                     self.ids['responseAcc'].labelCheckDict.clear()
 
@@ -106,17 +108,17 @@ class UserResponse(BoxLayout):
         for widg in self.ids.keys():            # this is slightly uncouth
             if 'Box' in widg:
                 self.ids[widg].set_labels_and_radio(False)
-        for iKey in ['naturalSlider', 'painSlider', 'phantomSlider']:
+        for iKey in ['naturalSlider', 'painSlider']:
             self.ids[iKey].value = 5
             self.ids[iKey].cursor_image = '../ImageBank/sliderVal.png'
         for i in self.ids['depthbox1'].children:
             i.active=False
         for i in self.ids['depthbox2'].children:
             i.active = False
-        for i in self.ids['PLPbox1'].children:
-            i.active=False
-        for i in self.ids['PLPbox2'].children:
-            i.active = False
+        # for i in self.ids['PLPbox1'].children:
+        #     i.active=False
+        # for i in self.ids['PLPbox2'].children:
+        #     i.active = False
 
         pass
 
@@ -130,7 +132,7 @@ class UserResponse(BoxLayout):
     #     while (1):
     #         non-blocking read of every subscribed message
     #         if TRIAL_START
-    #               set self.saveFolder name
+    #               set self.rootName name
     #               reset counters
     #               disable popup
     #               play tone
@@ -437,11 +439,10 @@ class CustomImage(Image):
 
     def save_png(self, child_idx):
         rootwidget = self.get_parent_window().children[child_idx]
-        if not os.path.exists(os.path.join(rootwidget.rootPath, rootwidget.saveFolder)):
-            os.makedirs(os.path.join(rootwidget.rootPath, rootwidget.saveFolder))
+        if not os.path.exists(rootwidget.rootPath):
+            os.makedirs(rootwidget.rootPath)
 
-        self.export_to_png(os.path.join(rootwidget.rootPath, rootwidget.saveFolder,
-                                        rootwidget.saveFolder+"_R%03d" % rootwidget.repNumber+'_'+self.imglabel+'.png'))
+        self.export_to_png(os.path.join(rootwidget.rootPath, f'{rootwidget.rootName}_{self.imglabel}_{rootwidget.repNumber}_.png'))
 
 
 class PerceptMap(App):
@@ -450,16 +451,26 @@ class PerceptMap(App):
     if a perceptmap.ini file does not exist it will be created in the same folder with the dfault parameters specified in
     build_config. edit the *.ini file to change these parameters
     """
+    _subject = ""
+    _date = ""
+    _name = ""
+
+    def __init__(self, subject: str = 'default', folder: str = '../data'):
+        self._subject = subject
+        self._folder = folder
+        self._date = datetime.datetime.now().strftime('%Y_%m_%d')
+        self._name = f'{self._subject}_{self._date}'
+        super().__init__()
 
     def build_config(self, config):
         config.setdefaults('config', {
-            'savePath': '../data',
+            'savePath': os.path.join(self._folder, self._name),
             'mmip': 'localhost',
-            'windowSize': (1368, 912),
+            'windowSize': (1200, 800),
             'windowColor': (1, 1, 1, 1),
             'windowBorderless': False,
-            'imgFiles': ['Rpalmar', 'Rdorsum', 'Farms', 'Barms', 'Lpalmar', 'Ldorsum'],
-            'tabLabels': ['Right\nPalm', 'Right\nDorsum', 'Arms\nFront', 'Arms\nBack', 'Left\nPalm', 'Left\nDorsum'],
+            'imgFiles': ['10-20EEG_top', '10-20EEG_side', 'Rpalmar', 'Rdorsum', 'Farms', 'Barms', 'Lpalmar', 'Ldorsum'],
+            'tabLabels': ['10-20\ntop', '10-20\nside', 'Right\nPalm', 'Right\nDorsum', 'Arms\nFront', 'Arms\nBack', 'Left\nPalm', 'Left\nDorsum'],
             'trialNumber': 0
         })
 
@@ -470,8 +481,11 @@ class PerceptMap(App):
         Window.borderless = config.getboolean('config', 'windowBorderless')
         if not os.path.exists(config.get('config', 'savePath')):
             os.makedirs(config.get('config', 'savePath'))
-        return UserResponse(config.get('config', 'savePath'), eval(config.get('config', 'imgFiles')),
-                            eval(config.get('config', 'tabLabels')), int(config.get('config', 'trialNumber')),
+        return UserResponse(self._name, 
+                            config.get('config', 'savePath'), 
+                            eval(config.get('config', 'imgFiles')),
+                            eval(config.get('config', 'tabLabels')), 
+                            int(config.get('config', 'trialNumber')),
                             config.get('config', 'mmip'))
 
     def on_stop(self):
@@ -481,4 +495,15 @@ class PerceptMap(App):
 
 
 if __name__ == '__main__':
-    PerceptMap().run()
+
+    parser = argparse.ArgumentParser(description='Interface to map sensory percepts and log per-trial results.')
+    parser.add_argument('subject', help='Name or "initials" of the subject.')
+    parser.add_argument('--folder', default='../data', help='Location where "data" folder will be saved.')
+    args = parser.parse_args()
+    print("---")
+    print(f'Subject: {args.subject}')
+    print("---")
+    print(f'Folder: {args.folder}')
+    print("---")
+    app = PerceptMap(subject=args.subject, folder=args.folder)
+    app.run()
