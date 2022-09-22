@@ -13,6 +13,7 @@ from kivy.uix.slider import Slider
 # from threading import Thread
 from kivy.uix.accordion import Accordion
 from kivy.uix.popup import Popup
+from kivy.uix.textinput import TextInput
 import argparse, datetime, os, yaml
 
 
@@ -57,6 +58,11 @@ class UserResponse(BoxLayout):
             self.ids['img%d' % idx].source = '../ImageBank/%s.png' % tabImg[0]
             self.ids['img%d' % idx].imglabel = tabImg[0]
             self.ids['tab%d' % idx].text = tabImg[1]
+        
+        self.ids["trialLabel"].text = f'Trial: {self.repNumber}'
+        self.ids["sensationLabel"].text = f'Sensation: {self.sensationNumber}'
+        self.ids["trialNumericInput"].text = f'{self.sensationNumber}'
+        self.ids["sensationNumericInput"].text = f'{self.sensationNumber}'
 
         # PLACEHOLDER: connect to message server, subscribe to messages
         # PLACEHOLDER: start listener thread
@@ -84,13 +90,13 @@ class UserResponse(BoxLayout):
                     os.makedirs(self.rootPath)
 
             if sensationdict:
-                with open(fname+f'_imPixel_{self.repNumber}.yml', 'w') as outfile:
+                with open(f'{fname}_imPixel_{self.repNumber}.yaml', 'w') as outfile:
                     outfile.write(yaml.dump(imgpropertiesdict, default_flow_style=False))
                     outfile.write(yaml.dump(sensationdict, default_flow_style=False))
                 self.ids['floatStencilArea'].lineDict.clear()
 
             if radiosliderdict['Sensation0']:
-                with open(fname+f'_RadioCheckSlider_{self.repNumber}.yml', 'w') as outfile:
+                with open(fname+f'_RadioCheckSlider_{self.repNumber}.yaml', 'w') as outfile:
                     outfile.write(yaml.dump(radiosliderdict, default_flow_style=False))
                     self.ids['responseAcc'].labelCheckDict.clear()
 
@@ -149,6 +155,28 @@ class UserResponse(BoxLayout):
     #
     #         time.sleep(0.001)
     #     pass
+    
+class NumericTextInput(TextInput):
+    """Allows user to input numeric text input value."""
+    input_type2 = 'none'
+    
+    def __init__(self, **kwargs):
+        super(NumericTextInput, self).__init__(multiline=False, **kwargs)
+        self.bind(on_text_validate=NumericTextInput.on_enter)
+        
+    @staticmethod
+    def on_enter(instance):
+        rootwidget = instance.get_root_window().children[-1]
+        value = int(instance.text)
+        if instance.input_type2=="trial":
+            rootwidget.repNumber = value
+            rootwidget.sensationNumber = 0
+            rootwidget.ids["trialLabel"].text = f'Trial: {rootwidget.repNumber}'
+            rootwidget.ids["sensationLabel"].text = f'Sensation: {rootwidget.sensationNumber}'
+            rootwidget.ids["sensationNumericInput"].text = f'{rootwidget.sensationNumber}'
+        elif instance.input_type2=="sensation":
+            rootwidget.sensationNumber = value
+            rootwidget.ids["sensationLabel"].text = f'Sensation: {rootwidget.sensationNumber}'                
 
 
 class SaveResetButton(Button):
@@ -171,6 +199,10 @@ class SaveResetButton(Button):
         rootwidget.repNumber += 1
         rootwidget.sensationNumber = 0
         rootwidget.ids["imageTab"].switch_to(rootwidget.ids["imageTab"]._original_tab)
+        rootwidget.ids["trialLabel"].text = f'Trial: {rootwidget.repNumber}'
+        rootwidget.ids["sensationLabel"].text = f'Sensation: {rootwidget.sensationNumber}'
+        rootwidget.ids["trialNumericInput"].text = f'{rootwidget.sensationNumber}'
+        rootwidget.ids["sensationNumericInput"].text = f'{rootwidget.sensationNumber}'
         # prevent propagation of touch
         stencilobj.buttonPress = True
         return True
@@ -312,6 +344,7 @@ class SensationButton(Button):
             self.get_parent_window().children[-1].reset_radio_check_slider()
 
             print('added sensation')
+            rootwidget.ids["sensationLabel"].text = f'Sensation: {rootwidget.sensationNumber}'
 
         else:  # clear lines button
 
@@ -442,7 +475,7 @@ class CustomImage(Image):
         if not os.path.exists(rootwidget.rootPath):
             os.makedirs(rootwidget.rootPath)
 
-        self.export_to_png(os.path.join(rootwidget.rootPath, f'{rootwidget.rootName}_{self.imglabel}_{rootwidget.repNumber}_.png'))
+        self.export_to_png(os.path.join(rootwidget.rootPath, f'{rootwidget.rootName}_Sensation{rootwidget.sensationNumber}_{self.imglabel}_{rootwidget.repNumber}_.png'))
 
 
 class PerceptMap(App):
@@ -452,19 +485,24 @@ class PerceptMap(App):
     build_config. edit the *.ini file to change these parameters
     """
     _subject = ""
+    _folder = ""
+    _block = -1
     _date = ""
     _name = ""
 
-    def __init__(self, subject: str = 'default', folder: str = '../data'):
+    def __init__(self, subject: str = 'default', folder: str = '../data', block: int = -1):
         self._subject = subject
         self._folder = folder
         self._date = datetime.datetime.now().strftime('%Y_%m_%d')
         self._name = f'{self._subject}_{self._date}'
+        self._block = block
         super().__init__()
 
     def build_config(self, config):
         config.setdefaults('config', {
             'savePath': os.path.join(self._folder, self._name),
+            'default_font': 'Tahoma', 
+            'window_icon': 'CMU_NI_BRAIN_RED.png', 
             'mmip': 'localhost',
             'windowSize': (1200, 800),
             'windowColor': (1, 1, 1, 1),
@@ -481,11 +519,15 @@ class PerceptMap(App):
         Window.borderless = config.getboolean('config', 'windowBorderless')
         if not os.path.exists(config.get('config', 'savePath')):
             os.makedirs(config.get('config', 'savePath'))
+        if self._block > -1:
+            block = self._block
+        else:
+            block = int(config.get('config', 'trialNumber'))
         return UserResponse(self._name, 
                             config.get('config', 'savePath'), 
                             eval(config.get('config', 'imgFiles')),
                             eval(config.get('config', 'tabLabels')), 
-                            int(config.get('config', 'trialNumber')),
+                            block,
                             config.get('config', 'mmip'))
 
     def on_stop(self):
@@ -499,11 +541,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Interface to map sensory percepts and log per-trial results.')
     parser.add_argument('subject', help='Name or "initials" of the subject.')
     parser.add_argument('--folder', default='../data', help='Location where "data" folder will be saved.')
+    parser.add_argument('--block', default=-1, type=int, help='"Trial" or "Block" number (integer).')
     args = parser.parse_args()
     print("---")
     print(f'Subject: {args.subject}')
     print("---")
     print(f'Folder: {args.folder}')
     print("---")
-    app = PerceptMap(subject=args.subject, folder=args.folder)
+    app = PerceptMap(subject=args.subject, folder=args.folder, block=args.block)
     app.run()

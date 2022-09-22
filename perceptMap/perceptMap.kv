@@ -43,6 +43,50 @@
         size_hint_x: 0.6
         orientation: 'vertical'
         #min_space: sp(60)
+		
+		AccordionItem:
+			id: trialAccordion
+			collapse: True
+			title: "Trial"
+			text_size: self.size
+			BoxLayout
+				padding: 25, 10
+				orientation: 'vertical'
+				spacing: 30
+				BoxLayout
+					orientation: 'vertical'
+					Label:
+						id: trialLabel
+						text: 'Current Block: 0'
+						size_hint_y: 0.35
+						text_size: self.size
+						halign: "left"
+						font_size: 20
+					NumericTextInput:
+						id: trialNumericInput
+						text: '0'
+						size_hint_y: 0.35
+						text_size: self.size
+						halign: "left"
+						font_size: 20
+						input_type: 'number'
+						input_type2: 'trial'
+					Label:
+						id: sensationLabel
+						text: 'Current Sensation: 0'
+						size_hint_y: 0.35
+						text_size: self.size
+						halign: "left"
+						font_size: 20
+					NumericTextInput:
+						id: sensationNumericInput
+						text: '0'
+						size_hint_y: 0.35
+						text_size: self.size
+						halign: "left"
+						font_size: 20
+						input_type: 'number'
+						input_type2: 'sensation'
 
         AccordionItem:              # font size set in style.kv
             id: qualityAccordion
