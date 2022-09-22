@@ -13,29 +13,35 @@ python <= 3.5
 ```
 ### Installing
 
--   Clone this repo to your local machine using `https://github.com/Neuro-Mechatronics-Interfaces/perceptmapper.git`
+-   Clone this repo to your local machine using  
+	```
+	git clone https://github.com/Neuro-Mechatronics-Interfaces/perceptmapper.git
+	```
  -  Install the packages in requirements.txt 
-	- pip : `pip install -r requirements.txt`
-	- conda: `conda install --file requirements.txt`
--  run `python perceptmapping.py`
-
-
-### References
-Chandrasekaran, S., Nanivadekar, A., McKernan, G. P., Helm, E. R., Boninger, M. L., Collinger, J. L., Gaunt, R. A., Fisher, L. E. Sensory restoration by epidural stimulation of the lateral spinal cord in upper-limb amputees. [eLife](https://elifesciences.org/articles/54349)  
-
-See more details at the original [RNEL-perceptmapper](https://github.com/pitt-rnel/perceptmapper). This set of descriptors have been used [previously](https://iopscience.iop.org/article/10.1088/1741-2552/aa966a) to characterize evoked sensory percepts.
-
-### Citation
-If you use this work in your research, please cite it as follows:   
-
-Nanivadekar, A., Chandrasekaran, C., Gaunt, R., Fisher., L. (2020, May 2). RNEL PerceptMapper (Version 2.0). Zenodo. http://doi.org/10.5281/zenodo.3939658  
-[![DOI](https://zenodo.org/badge/260802298.svg)](https://zenodo.org/badge/latestdoi/260802298)
-
-Copyright (c) 2016 RNEL (University of Pittsburgh)
-
-----------
+	- pip
+	 ```
+	 pip install -r requirements.txt
+	 ```
+	- conda: 
+	```
+	conda install --file requirements.txt
+	```
 
 ## Usage
+
+Following the installation above:  
+
+- From a terminal, navigate to the cloned folder:
+```
+git clone https://github.com/Neuro-Mechatronics-Interfaces/perceptmapper.git
+cd perceptmapping/perceptMap
+```
+- This version requires a subject name as the input argument.
+  + _Note that later you can change defaults manually in `perceptMap.ini` in the same folder_
+	```
+	python perceptMap.py -- mySubject
+	```
+  + Make sure to include the `--` after `perceptMap.py`, otherwise `kivy` takes all the input arguments instead of the application. 
 
 ### Layout
 The GUI layout is specified in the *perceptmap.kv* file. The PerceptMapper GUI can be divided into 3 parts:
@@ -102,7 +108,22 @@ Further, the GUIs internal counter for trial will be incremented and the GUI wil
 </p>    
 
 
- - The PerceptMapper GUI was designed to use [RNEL-Dragonfly](https://github.com/pitt-rnel/rnel_dragonfly) to run in *auto* mode where the GUI state is triggered by a separate module that controls stimulation and trial progress. In this mode, the GUI runs a separate thread to listen to these triggers and update the GUI state. If you would like a demo of this setup or need advice getting a similar setup working, you can post a new issue on the [RNEL PerceptMapper Github issues webpage](https://github.com/pitt-rnel/perceptmapper/issues) or [contact us]().    
+ - The PerceptMapper GUI was designed to use [RNEL-Dragonfly](https://github.com/pitt-rnel/rnel_dragonfly) to run in *auto* mode where the GUI state is triggered by a separate module that controls stimulation and trial progress. In this mode, the GUI runs a separate thread to listen to these triggers and update the GUI state. If you would like a demo of this setup or need advice getting a similar setup working, you can post a new issue on the [RNEL PerceptMapper Github issues webpage](https://github.com/pitt-rnel/perceptmapper/issues) or [contact us]().  
+
+### References
+Chandrasekaran, S., Nanivadekar, A., McKernan, G. P., Helm, E. R., Boninger, M. L., Collinger, J. L., Gaunt, R. A., Fisher, L. E. Sensory restoration by epidural stimulation of the lateral spinal cord in upper-limb amputees. [eLife](https://elifesciences.org/articles/54349)  
+
+See more details at the original [RNEL-perceptmapper](https://github.com/pitt-rnel/perceptmapper). This set of descriptors have been used [previously](https://iopscience.iop.org/article/10.1088/1741-2552/aa966a) to characterize evoked sensory percepts.
+
+### Citation
+If you use this work in your research, please cite it as follows:   
+
+Nanivadekar, A., Chandrasekaran, C., Gaunt, R., Fisher., L. (2020, May 2). RNEL PerceptMapper (Version 2.0). Zenodo. http://doi.org/10.5281/zenodo.3939658  
+[![DOI](https://zenodo.org/badge/260802298.svg)](https://zenodo.org/badge/latestdoi/260802298)
+
+Copyright (c) 2016 RNEL (University of Pittsburgh)
+
+---------  
 
  
 ### Versions
