@@ -3,7 +3,7 @@
 
 Python and [Kivy](https://kivy.org/#home) based touch interface for reporting location and modality of percepts evoked via spinal cord stimulation in upper or lower limb amputees
 
-<p align="center"><img src="https://im2.ezgif.com/tmp/ezgif-2-17a7b32f74.gif" width="684" height="486"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Neuro-Mechatronics-Interfaces/perceptmapper/main/docs/N3-perceptmapper.gif" width="684" height="486"></p>
 
 ## Getting Started
 
